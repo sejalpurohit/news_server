@@ -23,4 +23,28 @@ app.get("/api/articles", (req, res) => {
 		});
 });
 
+app.get("/api/users", (req, res) => {
+	return db.query(`SELECT * FROM users`).then(({ rows }) => {
+		res.status(200).send({ users: rows });
+	});
+});
+
+app.get("/api/articles/:article_id", (req, res) => {
+	const { article_id } = req.params;
+	return db
+		.query(`SELECT  * FROM articles WHERE article_id = $1`, [article_id])
+		.then(({ rows }) => {
+			res.status(200).send({ article: rows[0] });
+		});
+});
+
+app.get("/api/articles/:article_id/comments", (req, res) => {
+	const { article_id } = req.params;
+	return db
+		.query(`SELECT  * FROM comments WHERE article_id = $1`, [article_id])
+		.then(({ rows }) => {
+			res.status(200).send({ comments: rows });
+		});
+});
+
 module.exports = app;
