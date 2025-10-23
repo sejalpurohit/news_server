@@ -12,7 +12,7 @@ afterAll(() => {
 	return db.end();
 });
 
-describe("Testing /api/topics", () => {
+describe("Testing GET /api/topics", () => {
 	test("200: Respond with the requested Topics array of topic objects", () => {
 		return request(app)
 			.get("/api/topics")
@@ -30,7 +30,7 @@ describe("Testing /api/topics", () => {
 	});
 });
 
-describe("Testing /api/articles", () => {
+describe("Testing GET /api/articles", () => {
 	test("200: Respond with the requested Topics array of article objects", () => {
 		return request(app)
 			.get("/api/articles")
@@ -52,7 +52,7 @@ describe("Testing /api/articles", () => {
 	});
 });
 
-describe("Testing /api/users", () => {
+describe("Testing GET /api/users", () => {
 	test("200: Respond with the requested Topics array of user objects", () => {
 		return request(app)
 			.get("/api/users")
@@ -68,7 +68,7 @@ describe("Testing /api/users", () => {
 	});
 });
 
-describe("Testing /api/articles/:article_id", () => {
+describe("Testing GET /api/articles/:article_id", () => {
 	test("200: Respond with the requested Topics array of article objects", () => {
 		return request(app)
 			.get("/api/articles/3")
@@ -96,7 +96,7 @@ describe("Testing /api/articles/:article_id", () => {
 	});
 });
 
-describe("Testing /api/articles/:article_id/comments", () => {
+describe("Testing GET /api/articles/:article_id/comments", () => {
 	test("200: Respond with the requested Topics array of article objects", () => {
 		return request(app)
 			.get("/api/articles/1/comments")
@@ -114,6 +114,31 @@ describe("Testing /api/articles/:article_id/comments", () => {
 					expect(typeof comments.body).toBe("string");
 					expect(typeof comments.article_id).toBe("number");
 				});
+			});
+	});
+});
+
+describe("Testing POST /api/articles/:article_id/comments", () => {
+	test("201: Respond with the posted comments to the comment table", () => {
+		const comment = {
+			username: "butter_bridge",
+			body: "Its a beautiful day",
+		};
+		return request(app)
+			.post("/api/articles/1/comments")
+			.send(comment)
+			.expect(201)
+			.then((res) => {
+				const { body, author, article_id, comment_id, created_at } =
+					res.body.comment;
+
+				expect(typeof body).toBe("string");
+				expect(typeof author).toBe("string");
+				expect(body).toBe("Its a beautiful day");
+				expect(author).toBe("butter_bridge");
+				expect(typeof created_at).toBe("string");
+				expect(typeof comment_id).toBe("number");
+				expect(article_id).toBe(1);
 			});
 	});
 });
