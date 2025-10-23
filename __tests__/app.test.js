@@ -83,6 +83,7 @@ describe("Testing GET /api/articles/:article_id", () => {
 					votes,
 					article_img_url,
 				} = _body.article;
+
 				expect(article_id).toBe(3);
 				expect(typeof author).toBe("string");
 				expect(typeof title).toBe("string");

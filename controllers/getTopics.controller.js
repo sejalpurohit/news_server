@@ -1,11 +1,7 @@
-const db = require("../db/connection");
+const { getTopicsQuery } = require("../models/getTopics.model");
 
-function getTopics() {
-	return (req, res) => {
-		return db.query(`SELECT * FROM topics`).then(({ rows }) => {
-			res.status(200).send({ topics: rows });
-		});
-	};
-}
-
-module.exports = getTopics;
+exports.getTopics = (req, res) => {
+	return getTopicsQuery().then((topics) => {
+		res.status(200).send({ topics });
+	});
+};
