@@ -271,10 +271,36 @@ describe("Test Patch /api/articles/:article_id", () => {
 			.then(({ body }) => {
 				const { msg } = body;
 
-				expect(msg).toBe("Bad Request");
+				expect(msg).toBe({ msg: "Bad Request" });
 			});
 	});
+});
 
-	//77777. which does not exist
-	// not-an-id bad request
+describe.only("Test Delete /api/comments/:comment_id", () => {
+	test("204: Delete the Comment and Respond with Status code 204, No Content", () => {
+		return request(app)
+			.delete("/api/comments/1")
+			.expect(204)
+			.then(({ body }) => {
+				expect(body).toEqual({});
+			});
+	});
+	test("404: Return with status 404 error msg comment not found", () => {
+		return request(app)
+			.delete("/api/comments/99923")
+			.expect(404)
+			.then(({ body }) => {
+				const { msg } = body;
+				expect(msg).toEqual("Not Found");
+			});
+	});
+	test("400: Return with status 400 and error msg comment Bad Request", () => {
+		return request(app)
+			.delete("/api/comments/invalid-id")
+			.expect(400)
+			.then(({ body }) => {
+				const { msg } = body;
+				expect(msg).toEqual("Bad Request");
+			});
+	});
 });

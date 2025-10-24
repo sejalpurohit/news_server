@@ -7,7 +7,10 @@ const {
 	updateVotesByArticleId,
 } = require("./controllers/articles.controller");
 const { getUsers } = require("./controllers/users.controller");
-const { getCommentsByArticleId } = require("./controllers/comments.controller");
+const {
+	getCommentsByArticleId,
+	deleteCommentByid,
+} = require("./controllers/comments.controller");
 const {
 	postCommentByArticleId,
 } = require("./controllers/postComments.controller");
@@ -17,7 +20,6 @@ const {
 	handlePsqlError,
 	handleCustomError,
 	handleServerError,
-	handlePsqlErrortwo,
 } = require("./controllers/error.controller");
 
 app.use(express.json());
@@ -38,6 +40,7 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postCommentByArticleId);
 
 app.patch("/api/articles/:article_id/", updateVotesByArticleId);
+app.delete("/api/comments/:comment_id", deleteCommentByid);
 
 app.use(handleDefaultError);
 
