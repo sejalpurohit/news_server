@@ -1,4 +1,4 @@
-const { getTopicsQuery } = require("../models/getTopics.model");
+const { getTopicsQuery } = require("../models/topics.model");
 
 exports.getTopics = (req, res) => {
 	return getTopicsQuery().then((topics) => {

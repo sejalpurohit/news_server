@@ -1,17 +1,24 @@
 const express = require("express");
 const app = express();
-const { getTopics } = require("./controllers/getTopics.controller");
+const { getTopics } = require("./controllers/topics.controller");
 const {
 	getArticles,
 	getArticlesById,
-} = require("./controllers/getArticles.controller");
-const { getUsers } = require("./controllers/getUsers.controller");
-const {
-	getCommentsByArticleId,
-} = require("./controllers/getComments.controller");
+	updateVotesByArticleId,
+} = require("./controllers/articles.controller");
+const { getUsers } = require("./controllers/users.controller");
+const { getCommentsByArticleId } = require("./controllers/comments.controller");
 const {
 	postCommentByArticleId,
 } = require("./controllers/postComments.controller");
+
+const {
+	handleDefaultError,
+	handlePsqlError,
+	handleCustomError,
+	handleServerError,
+	handlePsqlErrortwo,
+} = require("./controllers/error.controller");
 
 app.use(express.json());
 app.get("/", (req, res) => {
@@ -29,5 +36,15 @@ app.get("/api/articles/:article_id", getArticlesById);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.post("/api/articles/:article_id/comments", postCommentByArticleId);
+
+app.patch("/api/articles/:article_id/", updateVotesByArticleId);
+
+app.use(handleDefaultError);
+
+app.use(handlePsqlError);
+
+app.use(handleCustomError);
+
+app.use(handleServerError);
 
 module.exports = app;
