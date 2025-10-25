@@ -1,4 +1,7 @@
-const { getUsersQuery, checkUserExistQuery } = require("../models/users.model");
+const {
+	getUsersQuery,
+	getUserByUsernameQuery,
+} = require("../models/users.model");
 
 exports.getUsers = (req, res) => {
 	return getUsersQuery().then((users) => {
@@ -6,10 +9,10 @@ exports.getUsers = (req, res) => {
 	});
 };
 
-exports.checkUserExist = () => {
-	return checkUserExistQuery().then((user) => {
-		if (user.length === 0) {
-			res.status(404).send({ msg: "Not Found" });
-		}
+exports.getUserByUsername = (req, res) => {
+	const { username } = req.params;
+
+	return getUserByUsernameQuery(username).then((user) => {
+		res.status(200).send({ user });
 	});
 };

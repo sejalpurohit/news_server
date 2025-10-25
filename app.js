@@ -6,11 +6,15 @@ const {
 	getArticlesById,
 	updateVotesByArticleId,
 } = require("./controllers/articles.controller");
-const { getUsers } = require("./controllers/users.controller");
+const {
+	getUsers,
+	getUserByUsername,
+} = require("./controllers/users.controller");
 const {
 	getCommentsByArticleId,
 	deleteCommentByid,
 	postCommentByArticleId,
+	updateVotesByCommentId,
 } = require("./controllers/comments.controller");
 
 const {
@@ -39,6 +43,9 @@ app.post("/api/articles/:article_id/comments", postCommentByArticleId);
 
 app.patch("/api/articles/:article_id/", updateVotesByArticleId);
 app.delete("/api/comments/:comment_id", deleteCommentByid);
+
+app.get("/api/users/:username", getUserByUsername);
+app.patch("/api/comments/:comment_id", updateVotesByCommentId);
 
 app.use(handleDefaultError);
 

@@ -11,6 +11,17 @@ beforeEach(() => {
 afterAll(() => {
 	return db.end();
 });
+describe("Test All */ ", () => {
+	test("404: Respond with 404 for invalid Route", () => {
+		return request(app)
+			.get("/api/newtopic")
+			.expect(404)
+			.then(({ body }) => {
+				const { msg } = body;
+				expect(msg).toBe("Not Found");
+			});
+	});
+});
 
 describe("Testing GET /api/topics", () => {
 	test("200: Respond with  status code 200 and the all the Topics as array of topic objects", () => {
@@ -271,7 +282,7 @@ describe("Testing GET /api/articles/:article_id/comments", () => {
 	});
 });
 
-describe.only("Testing POST /api/articles/:article_id/comments", () => {
+describe("Testing POST /api/articles/:article_id/comments", () => {
 	test("201: Respond with the posted comments to the comment table", () => {
 		const comment = {
 			username: "butter_bridge",
@@ -352,7 +363,7 @@ describe.only("Testing POST /api/articles/:article_id/comments", () => {
 				expect(msg).toBe("Bad Request");
 			});
 	});
-	test.only("400: Respond with Status Code:400, when no body in req body ", () => {
+	test("400: Respond with Status Code:400, when no body in req body ", () => {
 		const comment = {
 			username: "butter_bridge",
 			body: "",
@@ -466,14 +477,90 @@ describe("Test Delete /api/comments/:comment_id", () => {
 	});
 });
 
-describe("Test All */ ", () => {
-	test("404: Respond with 404 for invalid Route", () => {
+describe("Test GET /api/users/:username", () => {
+	test("200: Return with user object with the given username", () => {
 		return request(app)
-			.get("/api/newtopic")
+			.get("/api/users/lurker")
+			.expect(200)
+			.then(({ text }) => {
+				const parsedData = JSON.parse(text);
+				const { username, avatar_url, name } = parsedData.user;
+
+				expect(username).toBe("lurker");
+				expect(name).toBe("do_nothing");
+				expect(avatar_url).toBe(
+					"https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png"
+				);
+				expect(typeof username).toBe("string");
+				expect(typeof avatar_url).toBe("string");
+				expect(typeof name).toBe("string");
+			});
+	});
+	test("404: Return with status code 404 when user doesnot exist", () => {
+		return request(app)
+			.get("/api/users/notExist")
 			.expect(404)
 			.then(({ body }) => {
 				const { msg } = body;
-				expect(msg).toBe("Not Found");
+
+				expect(msg).toBe("User not Found");
+			});
+	});
+});
+
+describe("PATCH /api/comments/:comment_id", () => {
+	test("200 Respond with the updated comment when no of votes is changed", () => {
+		const reqBody = { inc_votes: 1 };
+
+		return request(app)
+			.patch("/api/comments/5")
+			.send(reqBody)
+			.expect(200)
+			.then(({ text }) => {
+				const parsedData = JSON.parse(text);
+				const comment = parsedData.comment;
+
+				const { comment_id, body, votes, created_at, article_id, author } =
+					comment;
+
+				expect(typeof comment_id).toBe("number");
+				expect(typeof body).toBe("string");
+				expect(typeof votes).toBe("number");
+				expect(typeof created_at).toBe("string");
+				expect(typeof article_id).toBe("number");
+				expect(typeof author).toBe("string");
+				expect(comment_id).toBe(5);
+				expect(body).toBe("I hate streaming noses");
+				expect(votes).toBe(1);
+				expect(created_at).toBe("2020-11-03T21:00:00.000Z");
+				expect(article_id).toBe(1);
+				expect(author).toBe("icellusedkars");
+			});
+	});
+	test("404: Respond status code: 404 and error msg Not Found , when the comment id does not exist ", () => {
+		const votes = { inc_votes: 50 };
+
+		return request(app)
+			.patch("/api/comments/7777")
+			.send(votes)
+			.expect(404)
+			.then(({ body }) => {
+				const { msg } = body;
+
+				expect(msg).toBe("Comment not found");
+			});
+	});
+	test("400: Respond status code: 400 and error msg Bad Request, when the article id is not a number ", () => {
+		const votes = { inc_votes: 50 };
+
+		return request(app)
+			.patch("/api/comments/not-a-num")
+			.send(votes)
+			.expect(400)
+			.then(({ body }) => {
+				const { msg } = body;
+
+				expect(msg).toBe("Bad Request");
 			});
 	});
 });

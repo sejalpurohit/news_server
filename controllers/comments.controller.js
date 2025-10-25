@@ -2,6 +2,7 @@ const {
 	getCommentsByIdQuery,
 	deleteCommentByidQuery,
 	postCommentsByArticleIdQuery,
+	updateVotesByCommentIdQuery,
 } = require("../models/comments.model");
 
 exports.getCommentsByArticleId = (req, res) => {
@@ -38,4 +39,13 @@ exports.postCommentByArticleId = (req, res) => {
 			res.status(201).send({ comment });
 		}
 	);
+};
+
+exports.updateVotesByCommentId = (req, res) => {
+	const { comment_id } = req.params;
+	const { inc_votes } = req.body;
+
+	return updateVotesByCommentIdQuery(comment_id, inc_votes).then((comment) => {
+		res.status(200).send({ comment });
+	});
 };

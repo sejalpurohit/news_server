@@ -31,3 +31,19 @@ exports.postCommentsByArticleIdQuery = (user_name, _body, _article_id) => {
 		return rows[0];
 	});
 };
+
+exports.updateVotesByCommentIdQuery = (id, vote) => {
+	return db
+		.query(
+			`UPDATE comments SET votes = votes + $1  where comment_id = $2 RETURNING *`,
+			[vote, id]
+		)
+		.then(({ rows }) => {
+			if (rows.length === 0) {
+				return Promise.reject({ status: 404, msg: "Comment not found" });
+			}
+
+			return rows[0];
+		});
+	// ;
+};
