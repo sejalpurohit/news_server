@@ -10,10 +10,8 @@ const { getUsers } = require("./controllers/users.controller");
 const {
 	getCommentsByArticleId,
 	deleteCommentByid,
-} = require("./controllers/comments.controller");
-const {
 	postCommentByArticleId,
-} = require("./controllers/postComments.controller");
+} = require("./controllers/comments.controller");
 
 const {
 	handleDefaultError,

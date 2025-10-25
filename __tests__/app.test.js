@@ -271,7 +271,7 @@ describe("Testing GET /api/articles/:article_id/comments", () => {
 	});
 });
 
-describe.skip("Testing POST /api/articles/:article_id/comments", () => {
+describe.only("Testing POST /api/articles/:article_id/comments", () => {
 	test("201: Respond with the posted comments to the comment table", () => {
 		const comment = {
 			username: "butter_bridge",
@@ -295,33 +295,75 @@ describe.skip("Testing POST /api/articles/:article_id/comments", () => {
 			});
 	});
 
-	test("403: Respond with Status Code:403 and Error message: Forbidden to make request when Username does not Exists", () => {
+	test("404: Respond with Status Code:404 and Error message: Not Found when Username does not Exists", () => {
 		const comment = {
 			username: "jhon121",
 			body: "this is a good blog",
 		};
 		return request(app)
-			.post("/api/articles/99999/comments")
+			.post("/api/articles/1/comments")
 			.send(comment)
-			.expect(403)
+			.expect(404)
 			.then(({ body }) => {
 				const { msg } = body;
-				expect(msg).toBe("Forbidden to make this request");
+				expect(msg).toBe("Not Found");
 			});
 	});
 
-	test("403: Respond with Status Code:403 and Error message: Forbidden to make request, when article Id does Not Exist", () => {
+	test("404: Respond with Status Code:404, when article Id does Not Found", () => {
 		const comment = {
 			username: "butter_bridge",
 			body: "A quick lazy fox jumps over a lazy dog",
 		};
 		return request(app)
-			.post("/api/articles/99/comments")
+			.post("/api/articles/999/comments")
 			.send(comment)
-			.expect(403)
+			.expect(404)
 			.then(({ body }) => {
 				const { msg } = body;
-				expect(msg).toBe("Forbidden to make this request");
+				expect(msg).toBe("Not Found");
+			});
+	});
+	test("400: Respond with Status Code:400, when article Id is not valid", () => {
+		const comment = {
+			username: "butter_bridge",
+			body: "A quick lazy fox jumps over a lazy dog",
+		};
+		return request(app)
+			.post("/api/articles/invalid/comments")
+			.send(comment)
+			.expect(400)
+			.then(({ body }) => {
+				const { msg } = body;
+				expect(msg).toBe("Bad Request");
+			});
+	});
+	test("400: Respond with Status Code:400, when no username in req body ", () => {
+		const comment = {
+			username: "",
+			body: "A quick lazy fox jumps over a lazy dog",
+		};
+		return request(app)
+			.post("/api/articles/invalid/comments")
+			.send(comment)
+			.expect(400)
+			.then(({ body }) => {
+				const { msg } = body;
+				expect(msg).toBe("Bad Request");
+			});
+	});
+	test.only("400: Respond with Status Code:400, when no body in req body ", () => {
+		const comment = {
+			username: "butter_bridge",
+			body: "",
+		};
+		return request(app)
+			.post("/api/articles/invalid/comments")
+			.send(comment)
+			.expect(400)
+			.then(({ body }) => {
+				const { msg } = body;
+				expect(msg).toBe("Bad Request");
 			});
 	});
 });

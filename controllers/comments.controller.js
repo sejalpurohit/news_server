@@ -1,6 +1,7 @@
 const {
 	getCommentsByIdQuery,
 	deleteCommentByidQuery,
+	postCommentsByArticleIdQuery,
 } = require("../models/comments.model");
 
 exports.getCommentsByArticleId = (req, res) => {
@@ -26,4 +27,15 @@ exports.deleteCommentByid = (req, res) => {
 			res.status(204).send({ msg: "Comment deleted Successfully" });
 		}
 	});
+};
+
+exports.postCommentByArticleId = (req, res) => {
+	const { article_id } = req.params;
+	const { username, body } = req.body;
+
+	return postCommentsByArticleIdQuery(username, body, article_id).then(
+		(comment) => {
+			res.status(201).send({ comment });
+		}
+	);
 };
