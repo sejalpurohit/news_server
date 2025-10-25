@@ -1,24 +1,47 @@
 const db = require("../db/connection");
+const format = require("pg-format");
 
-exports.getArticlesQuery = () => {
-	return db
-		.query(
-			`SELECT articles.article_id, articles.title, articles.body AS article_desc, articles.created_at, articles.votes, articles.article_img_url, articles.topic, articles.author, COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id`
+exports.getArticlesQuery = (order, sort, topic) => {
+	let queryStr1 = `SELECT articles.article_id, articles.title, articles.body AS article_desc, articles.created_at, articles.votes, articles.article_img_url, articles.topic, articles.author, COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id`;
+
+	let queryStr2 = ` GROUP BY articles.article_id`;
+
+	if (topic) {
+		str = format(` WHERE articles.topic = %L`, topic);
+		queryStr1 = queryStr1 + str + queryStr2;
+	} else {
+		if (
+			!sort ||
+			!["article_id", "title", "created_at", "votes", "topic"].includes(sort)
 		)
-		.then(({ rows }) => {
-			return rows;
-		});
+			sort = "created_at";
+		if (!order || !["ASC", "DESC"].includes(order.toUpperCase()))
+			order = "DESC";
+
+		const str = format(` ORDER BY %I %s`, sort, order);
+
+		queryStr1 = queryStr1 + queryStr2 + str;
+	}
+
+	return db.query(queryStr1).then(({ rows }) => {
+		return rows;
+	});
 };
 
 exports.getArticleByIdQuery = (id) => {
-	return db
-		.query(`SELECT  * FROM articles WHERE article_id = $1`, [id])
-		.then(({ rows }) => {
-			if (rows.length === 0) {
-				return Promise.reject({ status: 404, msg: "Path Not Found" });
-			}
-			return rows[0];
-		});
+	const formattedQuery = format(
+		`SELECT articles.*, COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = %L GROUP BY articles.article_id;`,
+		[id]
+	);
+
+	return db.query(formattedQuery).then(({ rows }) => {
+		if (rows.length === 0) {
+			return Promise.reject({ status: 404, msg: "Path Not Found" });
+		}
+		const article = rows[0];
+		article.comment_count = Number(article.comment_count);
+		return article;
+	});
 };
 
 exports.updateVotesByArticleIdQuery = (id, vote) => {

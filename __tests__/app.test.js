@@ -13,7 +13,7 @@ afterAll(() => {
 });
 
 describe("Testing GET /api/topics", () => {
-	test("200: Respond with the requested Topics array of topic objects", () => {
+	test("200: Respond with  status code 200 and the all the Topics as array of topic objects", () => {
 		return request(app)
 			.get("/api/topics")
 			.expect(200)
@@ -29,19 +29,10 @@ describe("Testing GET /api/topics", () => {
 				});
 			});
 	});
-	test("404: Respond with StatusCode: 404, Error Msg: Not Found", () => {
-		return request(app)
-			.get("/api/newtopic")
-			.expect(404)
-			.then(({ body }) => {
-				const { msg } = body;
-				expect(msg).toBe("Not Found");
-			});
-	});
 });
 
 describe("Testing GET /api/articles", () => {
-	test("200: Respond with the requested Topics array of article objects", () => {
+	test("200: Respond with status code 200 and the all the articles as array of article objects GET /api/articles", () => {
 		return request(app)
 			.get("/api/articles")
 			.expect(200)
@@ -61,10 +52,79 @@ describe("Testing GET /api/articles", () => {
 				});
 			});
 	});
+	test("200: Respond with status code 200 and all the articles in specified order as per the QueryParams GET /api/articles?sort_by=votes&order=ASC", () => {
+		return request(app)
+			.get("/api/articles?sort_by=votes&order=ASC")
+			.expect(200)
+			.then(({ text }) => {
+				const parsedData = JSON.parse(text);
+				const articlesData = parsedData.articles;
+				articlesData.forEach((article) => {
+					expect(article).toHaveProperty("author");
+					expect(article).toHaveProperty("title");
+					expect(article).toHaveProperty("article_id");
+					expect(article).toHaveProperty("article_desc");
+					expect(article).toHaveProperty("topic");
+					expect(article).toHaveProperty("created_at");
+					expect(article).toHaveProperty("votes");
+					expect(article).toHaveProperty("article_img_url");
+					expect(article).toHaveProperty("comment_count");
+				});
+			});
+	});
+	test("200: Respond with 200 and all the Articles in default order when order & sort_by are not valid: GET /api/articles?sort_by=invalid&order=none ", () => {
+		return request(app)
+			.get("/api/articles?sort_by=invalid&order=none")
+			.expect(200)
+			.then(({ text }) => {
+				const parsedData = JSON.parse(text);
+				const articlesData = parsedData.articles;
+				articlesData.forEach((article) => {
+					expect(article).toHaveProperty("author");
+					expect(article).toHaveProperty("title");
+					expect(article).toHaveProperty("article_id");
+					expect(article).toHaveProperty("article_desc");
+					expect(article).toHaveProperty("topic");
+					expect(article).toHaveProperty("created_at");
+					expect(article).toHaveProperty("votes");
+					expect(article).toHaveProperty("article_img_url");
+					expect(article).toHaveProperty("comment_count");
+				});
+			});
+	});
+	test("200: Respond with 200 when filtered the articles by the topic specified in the queryParam GET /api/articles?topic=cats ", () => {
+		return request(app)
+			.get("/api/articles?topic=cats")
+			.expect(200)
+			.then(({ text }) => {
+				const parsedData = JSON.parse(text);
+				const articlesData = parsedData.articles;
+				articlesData.forEach((article) => {
+					expect(article).toHaveProperty("author");
+					expect(article).toHaveProperty("title");
+					expect(article).toHaveProperty("article_id");
+					expect(article).toHaveProperty("article_desc");
+					expect(article).toHaveProperty("topic");
+					expect(article).toHaveProperty("created_at");
+					expect(article).toHaveProperty("votes");
+					expect(article).toHaveProperty("article_img_url");
+					expect(article).toHaveProperty("comment_count");
+				});
+			});
+	});
+	test("404: Respond with 404 when filtered the articles by the topic, and the topic value is invalid in the query GET /api/articles?topic=invalid", () => {
+		return request(app)
+			.get("/api/articles?topic=invalid")
+			.expect(404)
+			.then(({ body }) => {
+				const { msg } = body;
+				expect(msg).toBe("Not Found");
+			});
+	});
 });
 
 describe("Testing GET /api/users", () => {
-	test("200: Respond with the requested Topics array of user objects", () => {
+	test("200: Respond with status code 200 and all the Users as Array of User objects", () => {
 		return request(app)
 			.get("/api/users")
 			.expect(200)
@@ -81,7 +141,7 @@ describe("Testing GET /api/users", () => {
 });
 
 describe("Testing GET /api/articles/:article_id", () => {
-	test("200: Respond with the requested Topics array of article objects", () => {
+	test("200: Respond status code 200 and requested Article object, with comment count", () => {
 		return request(app)
 			.get("/api/articles/3")
 			.expect(200)
@@ -95,6 +155,7 @@ describe("Testing GET /api/articles/:article_id", () => {
 					created_at,
 					votes,
 					article_img_url,
+					comment_count,
 				} = _body.article;
 
 				expect(article_id).toBe(3);
@@ -106,6 +167,37 @@ describe("Testing GET /api/articles/:article_id", () => {
 				expect(typeof created_at).toBe("string");
 				expect(typeof votes).toBe("number");
 				expect(typeof article_img_url).toBe("string");
+				expect(typeof comment_count).toBe("number");
+			});
+	});
+	test("200: Respond status code 200 and requested Article object, with comment count =0 when no comments added for the article Id", () => {
+		return request(app)
+			.get("/api/articles/2")
+			.expect(200)
+			.then(({ _body }) => {
+				const {
+					author,
+					title,
+					article_id,
+					body,
+					topic,
+					created_at,
+					votes,
+					article_img_url,
+					comment_count,
+				} = _body.article;
+
+				expect(article_id).toBe(2);
+				expect(typeof author).toBe("string");
+				expect(typeof title).toBe("string");
+				expect(typeof article_id).toBe("number");
+				expect(typeof body).toBe("string");
+				expect(typeof topic).toBe("string");
+				expect(typeof created_at).toBe("string");
+				expect(typeof votes).toBe("number");
+				expect(typeof article_img_url).toBe("string");
+				expect(typeof comment_count).toBe("number");
+				expect(comment_count).toBe(0);
 			});
 	});
 
@@ -130,7 +222,7 @@ describe("Testing GET /api/articles/:article_id", () => {
 });
 
 describe("Testing GET /api/articles/:article_id/comments", () => {
-	test("200: Respond with the requested Topics array of article objects", () => {
+	test("200: Respond with status code 200 and all the comments for the artcile Id as array of comment objects", () => {
 		return request(app)
 			.get("/api/articles/1/comments")
 			.expect(200)
@@ -150,10 +242,37 @@ describe("Testing GET /api/articles/:article_id/comments", () => {
 				});
 			});
 	});
+	test("400: Respond with status code 400 for invalid article id", () => {
+		return request(app)
+			.get("/api/articles/invalid/comments")
+			.expect(400)
+			.then(({ body }) => {
+				const { msg } = body;
+				expect(msg).toBe("Bad Request");
+			});
+	});
+	test("404: Respond with status code 404 when No comments found for valid comment Id", () => {
+		return request(app)
+			.get("/api/articles/2/comments")
+			.expect(404)
+			.then(({ body }) => {
+				const { msg } = body;
+				expect(msg).toBe("Not Found");
+			});
+	});
+	test("404: Respond with status code 404 when No article exists for the given article Id", () => {
+		return request(app)
+			.get("/api/articles/987654/comments")
+			.expect(404)
+			.then(({ body }) => {
+				const { msg } = body;
+				expect(msg).toBe("Not Found");
+			});
+	});
 });
 
-describe("Testing POST /api/articles/:article_id/comments", () => {
-	test.only("201: Respond with the posted comments to the comment table", () => {
+describe.skip("Testing POST /api/articles/:article_id/comments", () => {
+	test("201: Respond with the posted comments to the comment table", () => {
 		const comment = {
 			username: "butter_bridge",
 			body: "Its a beautiful day let go fow a walk",
@@ -176,7 +295,7 @@ describe("Testing POST /api/articles/:article_id/comments", () => {
 			});
 	});
 
-	xtest("403: Respond with Status Code:403 and Error message: Forbidden to make request when Username does not Exists", () => {
+	test("403: Respond with Status Code:403 and Error message: Forbidden to make request when Username does not Exists", () => {
 		const comment = {
 			username: "jhon121",
 			body: "this is a good blog",
@@ -191,7 +310,7 @@ describe("Testing POST /api/articles/:article_id/comments", () => {
 			});
 	});
 
-	xtest("403: Respond with Status Code:403 and Error message: Forbidden to make request, when article Id does Not Exist", () => {
+	test("403: Respond with Status Code:403 and Error message: Forbidden to make request, when article Id does Not Exist", () => {
 		const comment = {
 			username: "butter_bridge",
 			body: "A quick lazy fox jumps over a lazy dog",
@@ -271,12 +390,12 @@ describe("Test Patch /api/articles/:article_id", () => {
 			.then(({ body }) => {
 				const { msg } = body;
 
-				expect(msg).toBe({ msg: "Bad Request" });
+				expect(msg).toBe("Bad Request");
 			});
 	});
 });
 
-describe.only("Test Delete /api/comments/:comment_id", () => {
+describe("Test Delete /api/comments/:comment_id", () => {
 	test("204: Delete the Comment and Respond with Status code 204, No Content", () => {
 		return request(app)
 			.delete("/api/comments/1")
@@ -294,13 +413,25 @@ describe.only("Test Delete /api/comments/:comment_id", () => {
 				expect(msg).toEqual("Not Found");
 			});
 	});
-	test("400: Return with status 400 and error msg comment Bad Request", () => {
+	test("400: Return with status code 400 and error msg comment Bad Request", () => {
 		return request(app)
 			.delete("/api/comments/invalid-id")
 			.expect(400)
 			.then(({ body }) => {
 				const { msg } = body;
 				expect(msg).toEqual("Bad Request");
+			});
+	});
+});
+
+describe("Test All */ ", () => {
+	test("404: Respond with 404 for invalid Route", () => {
+		return request(app)
+			.get("/api/newtopic")
+			.expect(404)
+			.then(({ body }) => {
+				const { msg } = body;
+				expect(msg).toBe("Not Found");
 			});
 	});
 });

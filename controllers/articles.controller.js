@@ -5,8 +5,14 @@ const {
 } = require("../models/articles.model");
 
 exports.getArticles = (req, res) => {
-	return getArticlesQuery().then((articles) => {
-		res.status(200).send({ articles });
+	let { sort_by, order, topic } = req.query;
+
+	return getArticlesQuery(sort_by, order, topic).then((articles) => {
+		if (articles.length === 0) {
+			return Promise.reject({ status: 404, msg: "Not Found" });
+		} else {
+			res.status(200).send({ articles });
+		}
 	});
 };
 

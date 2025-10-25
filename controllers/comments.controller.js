@@ -5,8 +5,13 @@ const {
 
 exports.getCommentsByArticleId = (req, res) => {
 	const { article_id } = req.params;
+
 	return getCommentsByIdQuery(article_id).then((comments) => {
-		res.status(200).send({ comments });
+		if (comments.length === 0) {
+			return Promise.reject({ status: 404, msg: "Not Found" });
+		} else {
+			res.status(200).send({ comments });
+		}
 	});
 };
 
