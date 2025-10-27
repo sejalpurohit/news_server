@@ -1,21 +1,10 @@
 const express = require("express");
 const app = express();
-const { getTopics } = require("./controllers/topics.controller");
-const {
-	getArticles,
-	getArticlesById,
-	updateVotesByArticleId,
-} = require("./controllers/articles.controller");
-const {
-	getUsers,
-	getUserByUsername,
-} = require("./controllers/users.controller");
-const {
-	getCommentsByArticleId,
-	deleteCommentByid,
-	postCommentByArticleId,
-	updateVotesByCommentId,
-} = require("./controllers/comments.controller");
+const articleRoute = require("./routes/atricles.api");
+const userRoute = require("./routes/user.api");
+const topicRoute = require("./routes/topics.api");
+const commentRoute = require("./routes/comments.api");
+const defaultRoute = require("./routes/default.api");
 
 const {
 	handleDefaultError,
@@ -24,35 +13,22 @@ const {
 	handleServerError,
 } = require("./controllers/error.controller");
 
+const router = express.Router();
+app.use(router);
+
 app.use(express.json());
-app.get("/", (req, res) => {
-	res.status(200).send({ msg: "Hello from Express Server" });
-});
 
-app.get("/api/topics", getTopics);
+app.use("/api", defaultRoute);
 
-app.get("/api/articles", getArticles);
-
-app.get("/api/users", getUsers);
-
-app.get("/api/articles/:article_id", getArticlesById);
-
-app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
-
-app.post("/api/articles/:article_id/comments", postCommentByArticleId);
-
-app.patch("/api/articles/:article_id/", updateVotesByArticleId);
-app.delete("/api/comments/:comment_id", deleteCommentByid);
-
-app.get("/api/users/:username", getUserByUsername);
-app.patch("/api/comments/:comment_id", updateVotesByCommentId);
+//articles
+app.use("/api/articles", articleRoute);
+app.use("/api/comments", commentRoute);
+app.use("/api/topics", topicRoute);
+app.use("/api/users", userRoute);
 
 app.use(handleDefaultError);
-
 app.use(handlePsqlError);
-
 app.use(handleCustomError);
-
 app.use(handleServerError);
 
 module.exports = app;
