@@ -45,5 +45,4 @@ exports.updateVotesByCommentIdQuery = (id, vote) => {
 
 			return rows[0];
 		});
-	// ;
 };

@@ -16,11 +16,13 @@ const {
 const router = express.Router();
 app.use(router);
 
+const path = require("path");
+app.use("/api", express.static(path.join(__dirname, "public")));
+
 app.use(express.json());
 
-app.use("/api", defaultRoute);
+app.use("/", defaultRoute);
 
-//articles
 app.use("/api/articles", articleRoute);
 app.use("/api/comments", commentRoute);
 app.use("/api/topics", topicRoute);

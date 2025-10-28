@@ -16,3 +16,10 @@ exports.getUserByUsername = (req, res) => {
 		res.status(200).send({ user });
 	});
 };
+
+exports.checkUserExist = (author) => {
+	return getUserByUsernameQuery(author).then((checkUser) => {
+		if (!checkUser) return false;
+		else return true;
+	});
+};

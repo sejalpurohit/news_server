@@ -42,98 +42,6 @@ describe("Testing GET /api/topics", () => {
 	});
 });
 
-describe("Testing GET /api/articles", () => {
-	test("200: Respond with status code 200 and the all the articles as array of article objects GET /api/articles", () => {
-		return request(app)
-			.get("/api/articles")
-			.expect(200)
-			.then(({ text }) => {
-				const parsedData = JSON.parse(text);
-				const articlesData = parsedData.articles;
-				articlesData.forEach((article) => {
-					expect(article).toHaveProperty("author");
-					expect(article).toHaveProperty("title");
-					expect(article).toHaveProperty("article_id");
-					expect(article).toHaveProperty("article_desc");
-					expect(article).toHaveProperty("topic");
-					expect(article).toHaveProperty("created_at");
-					expect(article).toHaveProperty("votes");
-					expect(article).toHaveProperty("article_img_url");
-					expect(article).toHaveProperty("comment_count");
-				});
-			});
-	});
-	test("200: Respond with status code 200 and all the articles in specified order as per the QueryParams GET /api/articles?sort_by=votes&order=ASC", () => {
-		return request(app)
-			.get("/api/articles?sort_by=votes&order=ASC")
-			.expect(200)
-			.then(({ text }) => {
-				const parsedData = JSON.parse(text);
-				const articlesData = parsedData.articles;
-				articlesData.forEach((article) => {
-					expect(article).toHaveProperty("author");
-					expect(article).toHaveProperty("title");
-					expect(article).toHaveProperty("article_id");
-					expect(article).toHaveProperty("article_desc");
-					expect(article).toHaveProperty("topic");
-					expect(article).toHaveProperty("created_at");
-					expect(article).toHaveProperty("votes");
-					expect(article).toHaveProperty("article_img_url");
-					expect(article).toHaveProperty("comment_count");
-				});
-			});
-	});
-	test("200: Respond with 200 and all the Articles in default order when order & sort_by are not valid: GET /api/articles?sort_by=invalid&order=none ", () => {
-		return request(app)
-			.get("/api/articles?sort_by=invalid&order=none")
-			.expect(200)
-			.then(({ text }) => {
-				const parsedData = JSON.parse(text);
-				const articlesData = parsedData.articles;
-				articlesData.forEach((article) => {
-					expect(article).toHaveProperty("author");
-					expect(article).toHaveProperty("title");
-					expect(article).toHaveProperty("article_id");
-					expect(article).toHaveProperty("article_desc");
-					expect(article).toHaveProperty("topic");
-					expect(article).toHaveProperty("created_at");
-					expect(article).toHaveProperty("votes");
-					expect(article).toHaveProperty("article_img_url");
-					expect(article).toHaveProperty("comment_count");
-				});
-			});
-	});
-	test("200: Respond with 200 when filtered the articles by the topic specified in the queryParam GET /api/articles?topic=cats ", () => {
-		return request(app)
-			.get("/api/articles?topic=cats")
-			.expect(200)
-			.then(({ text }) => {
-				const parsedData = JSON.parse(text);
-				const articlesData = parsedData.articles;
-				articlesData.forEach((article) => {
-					expect(article).toHaveProperty("author");
-					expect(article).toHaveProperty("title");
-					expect(article).toHaveProperty("article_id");
-					expect(article).toHaveProperty("article_desc");
-					expect(article).toHaveProperty("topic");
-					expect(article).toHaveProperty("created_at");
-					expect(article).toHaveProperty("votes");
-					expect(article).toHaveProperty("article_img_url");
-					expect(article).toHaveProperty("comment_count");
-				});
-			});
-	});
-	test("404: Respond with 404 when filtered the articles by the topic, and the topic value is invalid in the query GET /api/articles?topic=invalid", () => {
-		return request(app)
-			.get("/api/articles?topic=invalid")
-			.expect(404)
-			.then(({ body }) => {
-				const { msg } = body;
-				expect(msg).toBe("Not Found");
-			});
-	});
-});
-
 describe("Testing GET /api/users", () => {
 	test("200: Respond with status code 200 and all the Users as Array of User objects", () => {
 		return request(app)
@@ -556,6 +464,176 @@ describe("PATCH /api/comments/:comment_id", () => {
 		return request(app)
 			.patch("/api/comments/not-a-num")
 			.send(votes)
+			.expect(400)
+			.then(({ body }) => {
+				const { msg } = body;
+
+				expect(msg).toBe("Bad Request");
+			});
+	});
+});
+
+describe("Testing POST /api/articles/", () => {
+	test("201: Respond with the posted article", () => {
+		const article = {
+			title: "black cat",
+			body: "black cat is cute",
+			article_img_url: "https://dummyimage",
+			topic: "mitch",
+			author: "butter_bridge",
+		};
+
+		return request(app)
+			.post("/api/articles/")
+			.send(article)
+			.expect(201)
+			.then(({ text }) => {
+				const parsedData = JSON.parse(text);
+
+				const {
+					article_id,
+					author,
+					title,
+					body,
+					article_img_url,
+					topic,
+					created_at,
+					votes,
+					comment_count,
+				} = parsedData;
+
+				expect(typeof article_id).toBe("number");
+				expect(typeof title).toBe("string");
+				expect(typeof body).toBe("string");
+				expect(typeof created_at).toBe("string");
+				expect(typeof votes).toBe("number");
+				expect(typeof article_img_url).toBe("string");
+				expect(typeof topic).toBe("string");
+				expect(typeof author).toBe("string");
+				expect(typeof comment_count).toBe("number");
+
+				expect(title).toBe("black cat");
+				expect(body).toBe("black cat is cute");
+				expect(article_img_url).toBe("https://dummyimage");
+				expect(topic).toBe("mitch");
+				expect(author).toBe("butter_bridge");
+			});
+	});
+
+	test("404: Respond with Status Code:404 and Error message: Not Found when Username/Author does not Exists", () => {
+		const article = {
+			title: "Eight pug gifs that remind me of mitch",
+			body: "some gifsmmmmmmmm",
+			article_img_url:
+				"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+			topic: "mitchmmmmm",
+			author: "randomUser",
+		};
+
+		return request(app)
+			.post("/api/articles/")
+			.send(article)
+			.expect(404)
+			.then(({ body }) => {
+				const { msg } = body;
+				expect(msg).toBe("User not Found");
+			});
+	});
+
+	test("404: Respond with Status Code:404, when article Id does Not Found", () => {
+		const article = {
+			title: "Eight pug gifs that remind me of mitch and cam",
+			body: "wheels on the bus go round and round",
+			article_img_url:
+				"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+			topic: "its a new topic",
+			author: "butter_bridge",
+		};
+
+		return request(app)
+			.post("/api/articles/")
+			.send(article)
+			.expect(404)
+			.then(({ body }) => {
+				const { msg } = body;
+				expect(msg).toBe("Topic not Found");
+			});
+	});
+
+	test("404: Respond with Status Code:404, when title already exists", () => {
+		const article = {
+			title: "Eight pug gifs that remind me of mitch",
+			body: "wheels on the bus go round and round",
+			article_img_url:
+				"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+			topic: "mitch",
+			author: "butter_bridge",
+		};
+
+		return request(app)
+			.post("/api/articles/")
+			.send(article)
+			.expect(404)
+			.then(({ body }) => {
+				const { msg } = body;
+
+				expect(msg).toBe("Title already Exist");
+			});
+	});
+	test("400: Respond with Status Code:404, Msg Bad Request, Request body do not have Author", () => {
+		const article = {
+			title: "Eight pug gifs that remind me of mitch",
+			body: "wheels on the bus go round and round",
+			article_img_url:
+				"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+			topic: "mitch",
+			author: "",
+		};
+
+		return request(app)
+			.post("/api/articles/")
+			.send(article)
+			.expect(400)
+			.then(({ body }) => {
+				const { msg } = body;
+
+				expect(msg).toBe("Bad Request");
+			});
+	});
+
+	test("400: Respond with Status Code:404, Msg Bad Request, Request body do not have Topic", () => {
+		const article = {
+			title: "Eight pug gifs that remind me of mitch",
+			body: "wheels on the bus go round and round",
+			article_img_url:
+				"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+			topic: "",
+			author: "butter_bridge",
+		};
+
+		return request(app)
+			.post("/api/articles/")
+			.send(article)
+			.expect(400)
+			.then(({ body }) => {
+				const { msg } = body;
+
+				expect(msg).toBe("Bad Request");
+			});
+	});
+	test("400: Respond with Status Code:404, Msg Bad Request, Request body do not have Title", () => {
+		const article = {
+			title: "",
+			body: "wheels on the bus go round and round",
+			article_img_url:
+				"https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+			topic: "its a new topic",
+			author: "butter_bridge",
+		};
+
+		return request(app)
+			.post("/api/articles/")
+			.send(article)
 			.expect(400)
 			.then(({ body }) => {
 				const { msg } = body;

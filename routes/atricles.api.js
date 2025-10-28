@@ -4,6 +4,7 @@ const {
 	getArticles,
 	getArticlesById,
 	updateVotesByArticleId,
+	postArticle,
 } = require("../controllers/articles.controller");
 
 const {
@@ -19,5 +20,7 @@ router.get("/:article_id/comments", getCommentsByArticleId);
 router.post("/:article_id/comments", postCommentByArticleId);
 
 router.patch("/:article_id", updateVotesByArticleId);
+
+router.post("/", postArticle);
 
 module.exports = router;
