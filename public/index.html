@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0"
+		/>
+		<link
+			rel="stylesheet"
+			href="./style.css"
+		/>
+		<title>API Documemtation</title>
+	</head>
+	<body>
+		<nav class="sidebar">
+			<h2>API Endpoints</h2>
+			<section>
+				<h3>Topics</h3>
+				<a href="#get-topics">GET /api/topics</a>
+			</section>
+			<section>
+				<h3>Users</h3>
+				<a href="#get-user">GET /api/users</a>
+				<a href="#user-username">GET /api/users/:username</a>
+			</section>
+			<section>
+				<h3>Article</h3>
+				<a href="#get-article">GET /api/articles</a>
+				<a href="#get-article-id">GET /api/articles/:article_id</a>
+				<a href="#get-article-comment"
+					>GET /api/articles/:article_id/comments</a
+				>
+				<a href="#post-article-comment"
+					>POST /api/articles/:article_id/comments</a
+				>
+				<a href="#patch-article-comment">PATCH /api/articles/:article_id</a>
+
+				<a href="#post-article">POST /api/articles</a>
+			</section>
+			<section>
+				<h3>Comments</h3>
+				<a href="#delete-comments-id">DELETE /api/comments/:comment_id</a>
+				<a href="#patch-comment-vote">PATCH /api/comments/:comment_id</a>
+			</section>
+		</nav>
+		<!-- Header -->
+		<header>
+			<h1>NC News API Documentation</h1>
+			<p>Guide for using NC News API</p>
+		</header>
+		<!-- Main Content -->
+		<div class="main-content">
+			<section id="get-topics">
+				<h2>GET /api/topics</h2>
+				<p><strong>Description:</strong>Retrieves a list of all Topics.</p>
+				<h3>Example Request:</h3>
+				<pre><code>GET http://localhost:9000/api/topics</code></pre>
+				<h3>Example Response:</h3>
+				<pre><code>
+"topics": [
+{
+topic_id: 1,
+slug: 'mitch',
+description: 'The man, the Mitch, the legend',
+img_url: ''
+},
+{ topic_id: 2, slug: 'cats', description: 'Not dogs', img_url: '' },
+{
+topic_id: 3,
+slug: 'paper',
+description: 'what books are made of',
+img_url: ''
+}
+]
+</code></pre>
+			</section>
+			<section id="get-user">
+				<h2>GET /api/users</h2>
+				<p><strong>Description:</strong> Retrieves a list of all Users.</p>
+				<h3>Example Request:</h3>
+				<pre><code>GET http://localhost:9000/api/users</code></pre>
+				<h3>Example Response:</h3>
+				<pre><code>
+users: [
+{
+	users_id: 1,
+	username: 'butter_bridge',
+	name: 'jonny',
+	avatar_url: 'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg'
+},
+{
+	users_id: 2,
+	username: 'icellusedkars',
+	name: 'sam',
+	avatar_url: 'https://avatars2.githubusercontent.com/u/24604688?s=460&v=4'
+}
+]
+</code></pre>
+			</section>
+			<section id="user-username">
+				<h2>GET /api/users/:username</h2>
+				<p>
+					<strong>Description:</strong> Retrieves details of a specific user by
+					username
+				</p>
+				<h3>Example Request:</h3>
+				<pre><code>GET http://localhost:9000/api/users/lurker</code></pre>
+				<h3>Example Response:</h3>
+				<pre><code>
+user: {
+users_id: 4,
+username: 'lurker',
+name: 'do_nothing',
+avatar_url: 'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png'
+}
+</code></pre>
+			</section>
+			<section id="get-article">
+				<h2>GET /api/articles</h2>
+				<p><strong>Description:</strong>Retrieves a list of all Articles.</p>
+				<h3>Acceptable Queries:</h3>
+				<ul>
+					<li>
+						<code>?sort_by</code> – which sorts the articles by any valid column
+					</li>
+					<li><code>order=</code> – order, which can be set to ASC or DESC</li>
+					<li>
+						<code>?topic</code> – topic, which can be set to any existing topic
+					</li>
+				</ul>
+				<h3>Example Request:</h3>
+				<pre><code>GET http://localhost:9000/api/articles</code></pre>
+				<pre><code>GET http://localhost:9000/api/articles?sort_by=article_id&order=desc</code></pre>
+				<pre><code>GET http://localhost:9000/api/articles/?topic=cats</code></pre>
+				<h3>Example Response:</h3>
+				<pre><code>
+[{
+	article_id: 3,
+	title: 'Eight pug gifs that remind me of mitch',
+	article_desc: 'some gifs',
+	created_at: '2020-11-03T09:12:00.000Z',
+	votes: 0,
+	article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+	topic: 'mitch',
+	author: 'icellusedkars',
+	comment_count: '2'
+},
+{
+	article_id: 6,
+	title: 'A',
+	article_desc: 'Delicious tin of cat food',
+	created_at: '2020-10-18T01:00:00.000Z',
+	votes: 0,
+	article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+	topic: 'mitch',
+	author: 'icellusedkars',
+	comment_count: '1'
+}]
+</code></pre>
+			</section>
+			<section id="get-article-id">
+				<h2>GET /api/articles/:article_id</h2>
+				<p>
+					<strong>Description:</strong> Retrieves details of a specific article
+					by article Id
+				</p>
+				<h3>Example Request:</h3>
+				<pre><code>GET http://localhost:9000/api/articles/3</code></pre>
+				<h3>Example Response:</h3>
+				<pre><code>
+article: {
+article_id: 3,
+title: 'Eight pug gifs that remind me of mitch',
+body: 'some gifs',
+created_at: '2020-11-03T09:12:00.000Z',
+votes: 0,
+article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+topic: 'mitch',
+author: 'icellusedkars',
+comment_count: 2
+}
+</code></pre>
+			</section>
+			<section id="get-article-comment">
+				<h2>GET /api/articles/:article_id/comments</h2>
+				<p>
+					<strong>Description:</strong> Retrieves comments of a specific article
+				</p>
+				<h3>Example Request:</h3>
+				<pre><code>GET http://localhost:9000/api/articles/1/comments</code></pre>
+				<h3>Example Response:</h3>
+				<pre><code>
+comments: [
+{
+	comment_id: 2,
+	body: 'The beautiful thing about treasure is that it exists.ß',
+	votes: 14,
+	created_at: '2020-10-31T03:03:00.000Z',
+	article_id: 1,
+	author: 'butter_bridge'
+},
+{
+	comment_id: 3,
+	body: 'Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.',
+	votes: 100,
+	created_at: '2020-03-01T01:13:00.000Z',
+	article_id: 1,
+	author: 'icellusedkars'
+}
+]
+</code></pre>
+			</section>
+			<section id="post-article-comment">
+				<h2>POST/api/articles/:article_id/comments</h2>
+				<p>
+					<strong>Description:</strong> Post comments to a specific article by
+					Id
+				</p>
+				<h3>Example Request:</h3>
+				<pre><code>POST http://localhost:9000/api/articles/1/comments</code></pre>
+				<h3>Request Body (JSON):</h3>
+				<pre><code>
+{
+username: "butter_bridge",
+body: "Its a beautiful day let go fow a walk",
+};
+</code></pre>
+				<h3>Example Response:</h3>
+				<pre><code>
+comment: {
+comment_id: 19,
+body: 'Its a beautiful day let go fow a walk',
+votes: 0,
+created_at: '2025-10-28T21:27:50.533Z',
+article_id: 1,
+author: 'butter_bridge'
+}
+</code></pre>
+			</section>
+			<section id="patch-article-comment">
+				<h2>PATCH /api/articles/:article_id</h2>
+				<p>
+					<strong>Description:</strong> Update existing article. Update number
+					of votes on an existing Id.
+				</p>
+				<h3>Example Request:</h3>
+				<pre><code>PATCH http://localhost:9000/api/articles</code></pre>
+				<h3>Request Body (JSON):</h3>
+				<pre><code>
+votes = { inc_votes: 50 }
+</code></pre>
+				<h3>Example Response:</h3>
+				<pre><code>
+article: {
+article_id: 7,
+title: 'Z',
+body: 'I was hungry.',
+created_at: '2020-01-07T14:08:00.000Z',
+votes: 50,
+article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700',
+topic: 'mitch',
+author: 'icellusedkars'
+}
+			</code></pre>
+			</section>
+			<section id="post-article">
+				<h2>POST /api/articles</h2>
+				<p><strong>Description:</strong> Post new article.</p>
+				<h3>Example Request:</h3>
+				<pre><code>POST http://localhost:9000/api/articles</code></pre>
+				<h3>Request Body (JSON):</h3>
+				<pre><code>
+article = {
+title: "black cat",
+body: "black cat is cute",
+article_img_url: "https://dummyimage",
+topic: "mitch",
+author: "butter_bridge",
+}
+</code></pre>
+				<h3>Example Response:</h3>
+				<pre><code>
+{
+article_id: 14,
+title: 'black cat',
+body: 'black cat is cute',
+article_img_url: 'https://dummyimage',
+votes: 0,
+topic: 'mitch',
+author: 'butter_bridge',
+created_at: '2025-10-28T21:40:21.533Z',
+comment_count: 0
+}
+</code></pre>
+			</section>
+			<section id="delete-comments-id">
+				<h2>DELETE /api/comments/:comment_id</h2>
+				<p><strong>Description:</strong> Remove comment by comment Id</p>
+				<h3>Example Request:</h3>
+				<pre><code>DELETE http://localhost:9000/api/comments/1</code></pre>
+				<h3>Example Response:</h3>
+				<pre><code>
+{}
+</code></pre>
+			</section>
+			<section id="patch-comment-vote">
+				<h2>POST /api/articles</h2>
+				<p><strong>Description:</strong> Post new article.</p>
+				<h3>Example Request:</h3>
+				<pre><code>POST http://localhost:9000/api/articles</code></pre>
+				<h3>Request Body (JSON):</h3>
+				<pre><code>
+votes = { inc_votes: 1 }
+</code></pre>
+				<h3>Example Response:</h3>
+				<pre><code>
+comment: {
+comment_id: 5,
+body: 'I hate streaming noses',
+votes: 1,
+created_at: '2020-11-03T21:00:00.000Z',
+article_id: 1,
+author: 'icellusedkars'
+}
+</code></pre>
+			</section>
+			<footer>
+				<p>Developed by Sejal Purohit</p>
+			</footer>
+		</div>
+	</body>
+</html>

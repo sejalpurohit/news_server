@@ -12,6 +12,8 @@ const { checkTopicExist } = require("../controllers/topics.controller");
 exports.getArticles = (req, res) => {
 	let { sort_by, order, topic } = req.query;
 
+	console.log("req query", req.url);
+
 	return getArticlesQuery(sort_by, order, topic).then((articles) => {
 		if (articles.length === 0) {
 			return Promise.reject({ status: 404, msg: "Not Found" });

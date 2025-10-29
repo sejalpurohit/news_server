@@ -49,12 +49,128 @@ describe("Testing GET /api/users", () => {
 			.expect(200)
 			.then(({ text }) => {
 				const parsedData = JSON.parse(text);
+
 				const usersData = parsedData.users;
 				usersData.forEach((user) => {
 					expect(user).toHaveProperty("username");
 					expect(user).toHaveProperty("name");
 					expect(user).toHaveProperty("avatar_url");
 				});
+			});
+	});
+});
+
+describe("Testing GET /api/articles", () => {
+	test("200: Respond with status code 200 and the all the articles as array of article objects GET /api/articles", () => {
+		return request(app)
+			.get("/api/articles")
+			.expect(200)
+			.then(({ text }) => {
+				const parsedData = JSON.parse(text);
+				const articlesData = parsedData.articles;
+				articlesData.forEach((article) => {
+					expect(article).toHaveProperty("author");
+					expect(article).toHaveProperty("title");
+					expect(article).toHaveProperty("article_id");
+					expect(article).toHaveProperty("article_desc");
+					expect(article).toHaveProperty("topic");
+					expect(article).toHaveProperty("created_at");
+					expect(article).toHaveProperty("votes");
+					expect(article).toHaveProperty("article_img_url");
+					expect(article).toHaveProperty("comment_count");
+				});
+			});
+	});
+	test("200: Respond with status code 200 and all the articles in specified order as per the QueryParams GET /api/articles?sort_by=votes&order=ASC", () => {
+		return request(app)
+			.get("/api/articles?sort_by=votes&order=ASC")
+			.expect(200)
+			.then(({ text }) => {
+				const parsedData = JSON.parse(text);
+				const articlesData = parsedData.articles;
+				articlesData.forEach((article) => {
+					expect(article).toHaveProperty("author");
+					expect(article).toHaveProperty("title");
+					expect(article).toHaveProperty("article_id");
+					expect(article).toHaveProperty("article_desc");
+					expect(article).toHaveProperty("topic");
+					expect(article).toHaveProperty("created_at");
+					expect(article).toHaveProperty("votes");
+					expect(article).toHaveProperty("article_img_url");
+					expect(article).toHaveProperty("comment_count");
+				});
+			});
+	});
+	test("200: Respond with 200 and all the Articles in default order when order & sort_by are not valid: GET /api/articles?sort_by=invalid&order=none ", () => {
+		return request(app)
+			.get("/api/articles?sort_by=invalid&order=none")
+			.expect(200)
+			.then(({ text }) => {
+				const parsedData = JSON.parse(text);
+				const articlesData = parsedData.articles;
+				articlesData.forEach((article) => {
+					expect(article).toHaveProperty("author");
+					expect(article).toHaveProperty("title");
+					expect(article).toHaveProperty("article_id");
+					expect(article).toHaveProperty("article_desc");
+					expect(article).toHaveProperty("topic");
+					expect(article).toHaveProperty("created_at");
+					expect(article).toHaveProperty("votes");
+					expect(article).toHaveProperty("article_img_url");
+					expect(article).toHaveProperty("comment_count");
+				});
+			});
+	});
+	test("200: Respond with 200 when filtered the articles by the topic specified in the queryParam GET /api/articles?topic=cats ", () => {
+		return request(app)
+			.get("/api/articles?topic=cats")
+			.expect(200)
+			.then(({ text }) => {
+				const parsedData = JSON.parse(text);
+				const articlesData = parsedData.articles;
+				articlesData.forEach((article) => {
+					expect(article).toHaveProperty("author");
+					expect(article).toHaveProperty("title");
+					expect(article).toHaveProperty("article_id");
+					expect(article).toHaveProperty("article_desc");
+					expect(article).toHaveProperty("topic");
+					expect(article).toHaveProperty("created_at");
+					expect(article).toHaveProperty("votes");
+					expect(article).toHaveProperty("article_img_url");
+					expect(article).toHaveProperty("comment_count");
+				});
+			});
+	});
+	test("200: Responds with 200 and che check the sorted order of articles.", () => {
+		return request(app)
+			.get("/api/articles?sort_by=article_id&order=desc")
+			.expect(200)
+			.then(({ text }) => {
+				const parsedData = JSON.parse(text);
+
+				const articlesData = parsedData.articles;
+
+				expect(Array.isArray(articlesData)).toBe(true);
+				expect(articlesData).toBeSortedBy("article_id", { descending: true });
+				articlesData.forEach((article) => {
+					expect(typeof article.author).toBe("string");
+					expect(typeof article.title).toBe("string");
+					expect(typeof article.article_id).toBe("number");
+					expect(typeof article.topic).toBe("string");
+					expect(typeof article.created_at).toBe("string");
+					expect(typeof article.votes).toBe("number");
+					expect(typeof article.article_img_url).toBe("string");
+					expect(typeof article.comment_count).toBe("string");
+				});
+			});
+	});
+	test("404: Respond with 404 when filtered the articles by the topic, and the topic value is invalid in the query GET /api/articles?topic=invalid", () => {
+		return request(app)
+			.get("/api/articles?topic=invalid")
+			.expect(404)
+			.then(({ body }) => {
+				const { msg } = body;
+				expect(msg).toBe("Not Found");
 			});
 	});
 });
@@ -196,6 +312,7 @@ describe("Testing POST /api/articles/:article_id/comments", () => {
 			username: "butter_bridge",
 			body: "Its a beautiful day let go fow a walk",
 		};
+
 		return request(app)
 			.post("/api/articles/1/comments")
 			.send(comment)
@@ -416,7 +533,7 @@ describe("Test GET /api/users/:username", () => {
 	});
 });
 
-describe("PATCH /api/comments/:comment_id", () => {
+describe("Test PATCH /api/comments/:comment_id", () => {
 	test("200 Respond with the updated comment when no of votes is changed", () => {
 		const reqBody = { inc_votes: 1 };
 
@@ -473,7 +590,7 @@ describe("PATCH /api/comments/:comment_id", () => {
 	});
 });
 
-describe("Testing POST /api/articles/", () => {
+describe("Test POST /api/articles/", () => {
 	test("201: Respond with the posted article", () => {
 		const article = {
 			title: "black cat",
@@ -501,7 +618,6 @@ describe("Testing POST /api/articles/", () => {
 					votes,
 					comment_count,
 				} = parsedData;
-
 				expect(typeof article_id).toBe("number");
 				expect(typeof title).toBe("string");
 				expect(typeof body).toBe("string");

@@ -1,7 +1,7 @@
 const db = require("../db/connection");
 const format = require("pg-format");
 
-exports.getArticlesQuery = (order, sort, topic) => {
+exports.getArticlesQuery = (sort, order, topic) => {
 	let queryStr1 = `SELECT articles.article_id, articles.title, articles.body AS article_desc, articles.created_at, articles.votes, articles.article_img_url, articles.topic, articles.author, COUNT(comments.comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id`;
 
 	let queryStr2 = ` GROUP BY articles.article_id`;
