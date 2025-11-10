@@ -18,5 +18,6 @@ if (!process.env.PGDATABASE && !process.env.DATABASE_URL) {
 } else {
 	console.log(`Connected to ${process.env.PGDATABASE}`);
 }
+console.log(config, "Config");
 
 module.exports = db;
