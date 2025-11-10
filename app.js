@@ -13,6 +13,8 @@ const {
 	handleServerError,
 } = require("./controllers/error.controller");
 
+const cors = require("cors");
+app.use(cors());
 const router = express.Router();
 app.use(router);
 
