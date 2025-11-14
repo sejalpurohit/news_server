@@ -8,17 +8,21 @@ Built with **Node.js**, **Express**, and **PostgreSQL**.
 
 ## Hosted Version
 
-You can access the live API here:  
- **https://news-server-u1gw.onrender.com/**
-
-Example endpoint:  
-**https://news-server-u1gw.onrender.com/api/**
+You can access the live API here: **https://news-server-u1gw.onrender.com/** <br>
+<br> Example endpoint: **https://news-server-u1gw.onrender.com/api/** <br>
 
 ---
 
 ## GitHub Repository
 
 https://github.com/sirat-russo/nc_news_BE.git
+
+---
+
+## Frontend Details
+
+Live Website https://69174afa3a63a062772871c7--stalwart-gumdrop-3a89d3.netlify.app/ <br>
+<br>Repo Link: https://github.com/sejalpurohit/nc_news<br>
 
 ---
 
