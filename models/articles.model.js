@@ -12,7 +12,14 @@ exports.getArticlesQuery = (sort, order, topic) => {
 	} else {
 		if (
 			!sort ||
-			!["article_id", "title", "created_at", "votes", "topic"].includes(sort)
+			![
+				"article_id",
+				"title",
+				"created_at",
+				"votes",
+				"topic",
+				"comment_count",
+			].includes(sort)
 		)
 			sort = "created_at";
 		if (!order || !["ASC", "DESC"].includes(order.toUpperCase()))
