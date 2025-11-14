@@ -6,6 +6,22 @@ Built with **Node.js**, **Express**, and **PostgreSQL**.
 
 ---
 
+## Hosted Version
+
+You can access the live API here:  
+ **https://news-server-u1gw.onrender.com/**
+
+Example endpoint:  
+**https://news-server-u1gw.onrender.com/api/**
+
+---
+
+## GitHub Repository
+
+https://github.com/sirat-russo/nc_news_BE.git
+
+---
+
 ## Project Summary
 
 **NC News BACKEND** supports the following core features via HTTP requests:
